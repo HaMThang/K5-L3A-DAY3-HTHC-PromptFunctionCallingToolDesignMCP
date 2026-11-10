@@ -6,9 +6,9 @@
 
 ## Team
 
-- Team:
-- Members:
-- Provider/model:
+- Team:HTHC
+- Members:Lê Gia Hưng, Hà Minh Thắng, Nguyễn Thế Hoàng, Đặng Đức Cương
+- Provider/model:OpenAI
 
 ---
 
@@ -18,7 +18,7 @@
 
 > 1–2 câu mô tả agent dùng để làm gì (cho team khác hiểu nhanh).
 
-Ví dụ: "Research agent: tìm tin theo từ khóa / theo tài khoản, đọc URL, tổng hợp thành digest, và gửi lên Telegram khi được xác nhận."
+AI & Tech Research Agent - một agent tổng hợp tin AI/công nghệ mỗi ngày từ web, Twitter, Hacker News, GitHub và Hugging Face, rồi xuất thành bản tin tiếng Việt.
 
 **Link dùng thử (deploy):**
 
@@ -33,8 +33,15 @@ Ví dụ: "Research agent: tìm tin theo từ khóa / theo tài khoản, đọc 
 | Tên tool | Làm được gì | Tool mới nhóm thêm? |
 |---|---|---|
 | clarify | hỏi lại người dùng khi thiếu thông tin | không |
-|  |  |  |
-|  |  |  |
+| timeline | Lấy các bài đăng gần đây từ một tài khoản Twitter/X cụ thể. | không |
+|social_search | Tìm bài đăng trên Twitter/X theo từ khóa, sắp xếp theo mới nhất (Latest) hoặc nổi bật (Top). |  không|
+|lookup |	Tìm kiếm thông tin hoặc tin tức trên web trong một khoảng thời gian.|không|
+|fetch|Đọc nội dung trang web từ một đường dẫn URL.|không|
+|format|Trình bày thông tin đã thu thập thành bản tin tổng hợp, danh sách gạch đầu dòng, chuỗi bài đăng hoặc bản tin AI hằng ngày bằng tiếng Việt.|không|
+|send|Gửi văn bản lên Telegram; cần người dùng xác nhận trước khi gửi.|không|
+|policy|Tìm kiếm trong các tài liệu chính sách nội bộ được lưu cục bộ.|không|
+|papers|Tìm kiếm bài báo nghiên cứu khoa học trên arXiv.|không|
+|paper_text|Tải tệp PDF của bài báo trên arXiv và trích xuất nội dung văn bản.|không|
 
 ## A3. Câu hỏi mẫu để thử
 

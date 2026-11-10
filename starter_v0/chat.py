@@ -41,7 +41,9 @@ def trim_history(history: list[dict[str, str]], window: int) -> list[dict[str, s
     return history[-window * 2:]
 
 
-def execute_tool_call(call: ToolCall) -> dict[str, Any]:
+def execute_tool_call(
+    call: ToolCall, prior_events: list[dict[str, Any]] | None = None
+) -> dict[str, Any]:
     func = TOOL_FUNCTIONS.get(call.name)
     if not func:
         return {
@@ -50,7 +52,16 @@ def execute_tool_call(call: ToolCall) -> dict[str, Any]:
             "result": {"error": "unknown_tool", "message": f"No local implementation for {call.name}"},
         }
     try:
-        result = func(**call.args)
+        if call.name == "cite_sources":
+            sources = [
+                item
+                for event in prior_events or ()
+                if event["tool"] in {"lookup", "fetch", "papers", "paper_text"}
+                for item in event["result"].get("items", [])
+            ]
+            result = func(call.args.get("claims"), sources=sources)
+        else:
+            result = func(**call.args)
     except Exception as exc:
         result = {"error": type(exc).__name__, "message": str(exc)}
     return {"tool": call.name, "args": call.args, "result": result}
@@ -113,7 +124,7 @@ def run_model_tool_loop(
 
         for call in calls:
             print(f"🔧 {call.name}({json.dumps(call.args, ensure_ascii=False, sort_keys=True)})")
-            event = execute_tool_call(call)
+            event = execute_tool_call(call, all_tool_events)
             round_record["tool_results"].append(event)
             all_tool_events.append(event)
 
