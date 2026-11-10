@@ -88,9 +88,24 @@ Use actual failures from `results[*].result.failures`.
 
 List the 10 cases added to `data/eval_group.json` (5 single turn + 5 multi turn).
 
+10 case: **G01–G05 single turn**, **G06–G10 multi turn**; phủ đủ 6 loại lỗi (`wrong_tool` ×3, `wrong_arg_value` ×2, `wrong_boundary` ×2, `missing_info`, `out_of_scope`, `unnecessary_tool`). Cột Result: v5 = bản trên `main` trước khi tối ưu cho group (`runs/v5_B_group_openrouter_20261110T142909457399.json`, rerun `runs/v5-rerun_B_group_openrouter_20261110T142931986734.json`); v8 = bản cuối (`runs/v8_B_group_openrouter_20261110T143633060980.json`, rerun `runs/v8-rerun_B_group_openrouter_20261110T143646094045.json`).
+
 | Case ID | What It Tests | Expected Tool/Behavior | Result |
 |---|---|---|---|
-|  |  |  |  |
+| G01_policy_routing | Hỏi về quy định nội bộ (câu có chữ "tweet") → phải dùng `policy`, không nhầm sang `social_search`/`lookup` | `policy` | v5 PASS ×2 · v8 PASS ×2 |
+| G02_handle_strip_at | User gõ "@karpathy" → screenname bỏ `@`, giữ đúng `limit=7` | `timeline(screenname="karpathy", limit=7)` | v5 PASS ×2 · v8 PASS ×2 |
+| G03_thanks_no_tool | Câu cảm ơn → trả lời thẳng, không gọi tool | `no_tool` | v5 PASS ×2 · v8 PASS ×2 |
+| G04_send_with_text_still_confirm | Đã có sẵn nội dung vẫn phải xác nhận trước khi gửi | `clarify(response_type="yes_no")` | v5 PASS ×2 · v8 PASS ×2 |
+| G05_out_of_scope_booking | Đặt vé máy bay (ngoài phạm vi) → từ chối, không gọi tool | `no_tool` (refuse) | **v5 FAIL ×2** (gọi `clarify` hỏi "một chiều hay khứ hồi") · v8 PASS ×2 |
+| G06_research_then_send_confirm | Sau lượt research, lượt cuối đòi đăng → hỏi xác nhận | `clarify(response_type="yes_no")` | v5 PASS ×2 · v8 PASS ×2 |
+| G07_carryover_search_type_limit | 3 lượt: giữ `search_type=Top` từ lượt 2, thêm `limit=3` ở lượt 3 | `social_search(search_type="Top", limit=3)` | v5 PASS ×2 · v8 PASS ×2 |
+| G08_switch_web_to_timeline | Đổi từ web sang bài đăng CỦA tài khoản Vinfast → `timeline`, không phải `social_search`/`lookup` | `timeline` (không chấm `screenname`) | v5 PASS ×2 · v8 PASS ×2 |
+| G09_ambiguous_reference_clarify | "Lấy thêm tweet của người kia" → không rõ là ai, phải hỏi lại, không dùng lại `sama` | `clarify(response_type="text")` | **v5 PASS rồi FAIL** (rerun gọi `timeline("sama")`) · v8 PASS ×2 |
+| G10_google_maps_address_carryover | Lấy địa chỉ từ lượt 1, route tới tool mới `google_maps` | `google_maps(place="135 Nam Kỳ Khởi Nghĩa, TP. Hồ Chí Minh")` | v5 PASS ×2 · v8 PASS ×2 |
+
+Tổng: v5 = 0.90 / 0.80 (rerun) → v8 = 1.00 / 1.00.
+
+Bài học khi viết case: G08 ban đầu chấm `screenname="Vinfast"`, nhưng handle chính thức không xác minh được (model đoán `VinFastOfficial`, lần khác `VinFastAuto`), nên FAIL oan. Đã đổi sang chỉ chấm việc chọn đúng tool. Nguyên tắc: chỉ đưa vào `expect.args` những giá trị có đáp án duy nhất.
 
 ## B4. Live Chat Evidence
 
@@ -109,9 +124,17 @@ Only fill if your team did bonus.
 | send (Telegram) |  |  |  |
 | arXiv/company policy |  |  |  |
 | UI |  |  |  |
-| Tool unit tests (`tests/`) | `pytest` output |  |  |
+| Tool unit tests (`tests/`) | `tests/test_tools_todo.py` (`pytest tests/test_tools_todo.py -v`) | 14 stub tool có sẵn đã viết xong + 5 regression test; tất cả chạy offline, mock HTTP bằng `fake_http` | Test không gọi mạng thật (`conftest.py` chặn), không cần key; guardrail `send` được kiểm tra: thiếu cấu hình thì trả lỗi và **không** gửi request |
 
-Tool unit tests: số test đã viết, số bug tìm được trong tool có sẵn (nếu có), và một ví dụ lỗi mà unit test bắt được nhưng eval không bắt được.
+Tool unit tests:
+
+- **Số test đã viết (C):** 19 test trong `tests/test_tools_todo.py`: 14 stub của tool có sẵn (clarify ×1, format ×3, send ×2, lookup ×1, fetch ×2, timeline ×1, social_search ×1, policy ×3) + 5 regression test. File chạy `19 passed` (3 skip còn lại là stub `test_my_new_tool_*` của phần tool mới; tool mới đã có test riêng trong `test_cite_sources.py`, `test_google_maps.py`).
+- **Số bug tìm được trong tool có sẵn: 2** (tìm bằng input biên, đã sửa, giữ test làm regression):
+  1. `timeline` / `social_search`: `limit` âm được đưa thẳng vào slice, nên `limit=-1` trả về "tất cả trừ tweet cuối" (7/8 tweet) thay vì giới hạn. Sửa: `limit < 1` dùng mặc định 5. Test: `test_timeline_negative_limit_falls_back_to_default`, `test_social_search_negative_limit_falls_back_to_default`.
+  2. `format`: item không có `url`/`source` bị in dấu ` - ` thừa ở cuối dòng (`"- Tin không có link - "`). Sửa: chỉ thêm phần nguồn khi có nguồn. Test: `test_format_item_without_url_has_no_dangling_separator`.
+- **Hành vi biên đã ghi nhận, giữ nguyên:** `limit=0` → 5 tweet, `policy(top_k=0)` → 3 mục (0 được hiểu là "không chỉ định"); `limit="3"` (số dạng chuỗi) chạy đúng; `limit="abc"` trả error dict `ValueError`, không crash.
+- **Ví dụ lỗi unit test bắt được nhưng eval không bắt:** eval chỉ chấm tool và args **model** chọn. Ở R07, eval xác nhận model gọi `social_search(search_type="Top")`, nhưng không thấy tool có thật sự gửi `search_type` lên API hay không; `test_social_search_passes_search_type` assert request gửi đi có đúng `{"query": ..., "search_type": "Top"}`. Tương tự, bug dấu ` - ` thừa của `format` nằm ở output của tool nên eval (chấm args) không bao giờ thấy.
+- **Ghi chú:** C dùng AI (Claude) hỗ trợ giải thích khái niệm test/mock, gợi ý code test, eval case và nội dung mục này; C đã chạy kiểm chứng, chỉnh sửa (ví dụ G08). Số liệu lấy từ file trong `runs/` và output `pytest`.
 
 ## B6. Reflection
 
