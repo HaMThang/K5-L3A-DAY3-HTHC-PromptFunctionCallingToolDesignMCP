@@ -18,7 +18,7 @@
 
 > 1–2 câu mô tả agent dùng để làm gì (cho team khác hiểu nhanh).
 
-Ví dụ: "Research agent: Research new tech theo từ khóa / theo tài khoản, đọc URL, tổng hợp thành digest, và gửi lên Telegram khi được xác nhận."
+AI & Tech Research Agent - một agent tổng hợp tin AI/công nghệ mỗi ngày từ web, Twitter, Hacker News, GitHub và Hugging Face, rồi xuất thành bản tin tiếng Việt.
 
 **Link dùng thử (deploy):**
 
