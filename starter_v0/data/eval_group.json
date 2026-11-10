@@ -3,5 +3,25 @@
   "dataset_role": "group",
   "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_google_maps_specific_address",
+      "phase": "B",
+      "query": "Tạo link Google Maps cho địa chỉ 135 Nam Kỳ Khởi Nghĩa, TP. Hồ Chí Minh.",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "google_maps",
+            "args": {
+              "place": "135 Nam Kỳ Khởi Nghĩa, TP. Hồ Chí Minh"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Route a direct map-link request to google_maps and preserve the supplied address."
+      }
+    }
+  ]
 }

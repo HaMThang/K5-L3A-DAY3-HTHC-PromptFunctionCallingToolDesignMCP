@@ -190,3 +190,11 @@ tools:
               quote: {type: string, description: "Đoạn trích nguyên văn từ summary của nguồn"}
             required: [claim, url, quote]
       required: [claims]
+
+  - name: google_maps
+    description: "Tạo link tìm kiếm Google Maps cho một địa điểm cụ thể. Dùng khi người dùng hỏi về địa điểm đó hoặc yêu cầu link bản đồ."
+    parameters:
+      type: object
+      properties:
+        place: {type: string, description: "Tên địa điểm hoặc địa chỉ. Kèm thành phố hoặc địa chỉ đã xác minh nếu có."}
+      required: [place]

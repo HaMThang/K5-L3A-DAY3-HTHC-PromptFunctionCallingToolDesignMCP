@@ -8,7 +8,7 @@
 
 - Team:HTHC
 - Members:Lê Gia Hưng, Hà Minh Thắng, Nguyễn Thế Hoàng, Đặng Đức Cương
-- Provider/model:OpenAI
+- Provider/model:OpenAI/gpt-4o-mini
 
 ---
 
