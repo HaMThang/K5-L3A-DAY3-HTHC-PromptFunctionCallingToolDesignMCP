@@ -50,9 +50,13 @@ AI & Tech Research Agent - một agent tổng hợp tin AI/công nghệ mỗi ng
 > 3–5 câu hỏi/yêu cầu mẫu để team khác tự thử agent ngay.
 
 1.Hôm nay có những tin tức AI nào nổi bật nhất?
+
 2.Những mô hình AI mới nào vừa được ra mắt?
+
 3.Top 5 dự án AI đang trending trên GitHub là gì?
+
 4.Cộng đồng Hacker News đang thảo luận về chủ đề AI nào?
+
 5.Xu hướng công nghệ nào đang được quan tâm nhất tuần này?
 
 ---
