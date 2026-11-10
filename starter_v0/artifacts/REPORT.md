@@ -8,7 +8,7 @@
 
 - Team:HTHC
 - Members:Lê Gia Hưng, Hà Minh Thắng, Nguyễn Thế Hoàng, Đặng Đức Cương
-- Provider/model: OpenAI / gpt-4o-mini
+- Provider/model: OpenAI gpt-4o-mini (qua OpenRouter, `openai/gpt-4o-mini`)
 
 ---
 
@@ -143,7 +143,7 @@ Only fill if your team did bonus.
 
 Tool unit tests:
 
-- **Số test đã viết (C):** 19 test trong `tests/test_tools_todo.py`: 14 stub của tool có sẵn (clarify ×1, format ×3, send ×2, lookup ×1, fetch ×2, timeline ×1, social_search ×1, policy ×3) + 5 regression test. File chạy `19 passed` (3 skip còn lại là stub `test_my_new_tool_*` của phần tool mới; tool mới đã có test riêng trong `test_cite_sources.py`, `test_google_maps.py`).
+- **Số test đã viết (C):** 19 test trong `tests/test_tools_todo.py`: 14 stub của tool có sẵn (clarify ×1, format ×3, send ×2, lookup ×1, fetch ×2, timeline ×1, social_search ×1, policy ×3) + 5 regression test. File chạy `19 passed`. 3 stub `test_my_new_tool_*` đã gỡ ở v9 vì tool mới có test riêng: `test_cite_sources.py` (5), `test_google_maps.py` (3), `test_ai_newsletter.py` (4). Toàn bộ `pytest`: `112 passed`, 0 failed, 0 skipped.
 - **Số bug tìm được trong tool có sẵn: 2** (tìm bằng input biên, đã sửa, giữ test làm regression):
   1. `timeline` / `social_search`: `limit` âm được đưa thẳng vào slice, nên `limit=-1` trả về "tất cả trừ tweet cuối" (7/8 tweet) thay vì giới hạn. Sửa: `limit < 1` dùng mặc định 5. Test: `test_timeline_negative_limit_falls_back_to_default`, `test_social_search_negative_limit_falls_back_to_default`.
   2. `format`: item không có `url`/`source` bị in dấu ` - ` thừa ở cuối dòng (`"- Tin không có link - "`). Sửa: chỉ thêm phần nguồn khi có nguồn. Test: `test_format_item_without_url_has_no_dangling_separator`.
