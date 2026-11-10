@@ -8,7 +8,7 @@
 
 - Team:HTHC
 - Members:Lê Gia Hưng, Hà Minh Thắng, Nguyễn Thế Hoàng, Đặng Đức Cương
-- Provider/model:OpenAI/gpt-4o-mini
+- Provider/model: OpenAI / gpt-4o-mini
 
 ---
 
@@ -18,7 +18,7 @@
 
 > 1–2 câu mô tả agent dùng để làm gì (cho team khác hiểu nhanh).
 
-AI & Tech Research Agent - một agent tổng hợp tin AI/công nghệ mỗi ngày từ web, Twitter, Hacker News, GitHub và Hugging Face, rồi xuất thành bản tin tiếng Việt.
+AI & Tech Research Agent - một agent tổng hợp tin AI/công nghệ mỗi ngày từ web, Twitter/X và bài báo arXiv, rồi xuất thành bản tin tiếng Việt.
 
 **Link dùng thử (deploy):**
 
@@ -44,6 +44,7 @@ AI & Tech Research Agent - một agent tổng hợp tin AI/công nghệ mỗi ng
 |paper_text|Tải tệp PDF của bài báo trên arXiv và trích xuất nội dung văn bản.|không|
 |google_maps|Tìm kiếm và gắn kèm link googlemap |Đúng|
 |cite_sources|Gắn kèm nguồn gốc của tin |Đúng|
+|ai_newsletter|Tạo bản tin AI tiếng Việt (có link nguồn) trong một bước: tìm tin trên web theo chủ đề rồi trình bày thành bản tin; chỉ dùng khi người dùng xin bản tin.|Đúng|
 
 ## A3. Câu hỏi mẫu để thử
 
@@ -53,11 +54,7 @@ AI & Tech Research Agent - một agent tổng hợp tin AI/công nghệ mỗi ng
 
 2.Những mô hình AI mới nào vừa được ra mắt?
 
-3.Top 5 dự án AI đang trending trên GitHub là gì?
-
-4.Cộng đồng Hacker News đang thảo luận về chủ đề AI nào?
-
-5.Xu hướng công nghệ nào đang được quan tâm nhất tuần này?
+3.Xu hướng công nghệ nào đang được quan tâm nhất tuần này?
 
 ---
 
@@ -65,20 +62,23 @@ AI & Tech Research Agent - một agent tổng hợp tin AI/công nghệ mỗi ng
 
 ## B1. Version Evidence
 
-Fill from `artifacts/version_log.csv` and `runs/*.json`.
-
 | Version | Changed Artifact | Hypothesis | Metric Before | Metric After | Run File |
 |---|---|---|---:|---:|---|
-| v0 | baseline |Đo hành vi của prompt và tools.yaml starter trước khi sửa  |  | 0.70 |  runs/v0_B_base_openrouter_20261110T102735867300.json|
-| v1 |  system_prompt.md| H1: thay chỉ dẫn đoán bằng rule gọi clarify khi thiếu account/URL, vẫn cho map tên người sang handle → R10, R11 PASS | 0.70 | 0.85 |runs/v1_B_base_openrouter_20261110T105843902795.json  |
-| v2 | system_prompt.md | H3: thay cứ gửi luôn bằng rule xác nhận clarify yes_no trước khi send → R12 PASS. Kết quả: R12 vẫn FAIL (model hỏi nội dung bằng text, xung đột với rule thiếu thông tin của H1); chạy lại v2-rerun cho cùng kết quả |0.85  | 0.95 | runs/v2_B_base_openrouter_20261110T105932596003.json |
-| v3 | system_prompt.md |H3b: thêm câu ưu tiên xác nhận yes_no hơn rule thiếu thông tin → R12 PASS. Kết quả: BÁC BỎ, R12 vẫn FAIL; R11 (thiếu response_type) và R13 (thiếu topic) dao động. Gỡ câu này, v4 xây trên v2  |0.95  | 0.85 | runs/v3_B_base_openrouter_20261110T110117470939.json |
-|v4|tools.yaml|H6: viết lại tools.yaml: description có khi nào dùng / không dùng, convention args, response_type và topic thành required, clarify mô tả yes_no cho send → R11, R12, R13 PASS. Kết quả: 20/20, v4-rerun cũng 20/20|0.95|1.0|runs/v4_B_base_openrouter_20261110T110248937728.json|
-|v4.5|system_prompt.md|Bỏ câu ép một bước thì base vẫn 20/20 (3/3 lần chạy)|1.0|1.0|runs/v4.5_B_base_openrouter_20261110T114843251934.json|
+| v0 | baseline | Đo hành vi chưa tối ưu trước khi sửa | | 0.70 | `runs/v0_B_base_openrouter_20261110T102735867300.json` |
+| v1 | system_prompt.md | Thay chỉ dẫn đoán bằng rule gọi `clarify` khi thiếu account/URL thì R10, R11 PASS | 0.70 | 0.85 | `runs/v1_B_base_openrouter_20261110T105843902795.json` |
+| v2 | system_prompt.md | Thay chỉ dẫn gửi luôn bằng rule `clarify` yes_no trước khi `send` thì R12 PASS (kết quả: R12 vẫn FAIL) | 0.85 | 0.95 | `runs/v2_B_base_openrouter_20261110T105932596003.json` |
+| v3 | system_prompt.md | Thêm câu ưu tiên xác nhận hơn rule thiếu thông tin thì R12 PASS (bác bỏ, gỡ ở v4) | 0.95 | 0.85 | `runs/v3_B_base_openrouter_20261110T110117470939.json` |
+| v4 | tools.yaml | Viết lại tools.yaml: khi nào dùng/không dùng, quy ước args, `response_type` và `topic` required thì R11–R13 PASS | 0.95 | 1.00 | `runs/v4_B_base_openrouter_20261110T110248937728.json` |
+| v4.5 | system_prompt.md | Bỏ câu ép một bước, một tool thì base vẫn 20/20 | 1.00 | 1.00 | `runs/v4.5_B_base_openrouter_20261110T114843251934.json` |
+| v5 | tools.yaml | Thêm 2 tool mới của B (`cite_sources`, `google_maps`) không làm tụt base (group: 0.90, rerun 0.80) | 1.00 | 1.00 | `runs/v5_B_base_openrouter_20261110T142855991620.json` |
+| v6 | system_prompt.md | Thêm rule phạm vi (ngoài research thì không gọi tool, kể cả `clarify`) thì G05 PASS (base tụt vì M06) | 1.00 | 0.95 | `runs/v6_B_base_openrouter_20261110T143217412592.json` |
+| v7 | system_prompt.md | Chỉ gọi tool cho lượt mới nhất, không gọi lại nguồn user đã bỏ thì M06 PASS | 0.95 | 1.00 | `runs/v7_B_base_openrouter_20261110T143409151911.json` |
+| v8 | system_prompt.md | Tham chiếu mập mờ ("người kia") coi là thiếu thông tin, hỏi bằng `clarify` thì G09 PASS (group 10/10) | 1.00 | 1.00 | `runs/v8_B_base_openrouter_20261110T143548624308.json` |
+| v9 | tools.yaml | Thêm tool `ai_newsletter` (chỉ dùng khi user xin bản tin), gỡ khai báo trùng thì base giữ 20/20, group 11/11 | 1.00 | 1.00 | `runs/v9-rerun_B_base_openrouter_20261110T163104889332.json` |
+
+Độ ổn định: từ v4 trở đi mỗi version chạy ít nhất 2 lần (file `*-rerun*` trong `runs/`). Ở v7 và v9 có một lần base chỉ được 0.95 do R10 dao động, lần chạy lại PASS. v0–v4.5 do A làm, v5–v9 do C làm thay A (ghi trong cột `author` của `version_log.csv`).
 
 ## B2. Failure Analysis
-
-Use actual failures from `results[*].result.failures`.
 
 | Case ID | Failure Type | Actual Tool Calls | What Failed | Fix |
 |---|---|---|---|---|
@@ -90,7 +90,12 @@ Use actual failures from `results[*].result.failures`.
 | R12 (v0) | wrong_boundary | `send(text="Bản tin này")` | gửi luôn, không xác nhận | v2: rule xác nhận trước khi `send` |
 | R12 (v1–v3) | wrong_boundary | `clarify(response_type="text", question="…cung cấp nội dung bản tin…")` | hỏi nội dung thay vì hỏi xác nhận `yes_no`; rule thiếu thông tin thắng rule xác nhận | v3 (sửa prompt) thất bại; v4: mô tả `clarify` trong tools.yaml ghi rõ trước send/post luôn hỏi `yes_no` |
 | R13 (v0, v3) | wrong_tool (thực tế: wrong_arg_value) | `lookup(query="AI news", timeframe="day")` + `social_search(query="AI")` | chọn đúng 2 tool nhưng thiếu `topic="news"`, `query` thừa chữ "news" | v4: `topic` required, `query` chỉ chứa từ khoá |
-| G05 (group, v4.5) | out_of_scope | `clarify(question="Bạn muốn đặt vé một chiều hay khứ hồi?")` | yêu cầu đặt vé lẽ ra từ chối, agent hỏi lại | chưa sửa: cần rule phạm vi trong prompt |
+| G05 (group, v4.5–v5) | out_of_scope | `clarify(question="Bạn muốn đặt vé một chiều hay khứ hồi?", response_type="text")` | yêu cầu đặt vé lẽ ra từ chối, agent lại hỏi tiếp để làm | v6: rule phạm vi trong prompt (PASS từ v6) |
+| M06 (v6) | wrong_tool | `lookup(query="OpenAI", topic="news")` + `social_search(query="OpenAI")` | user đã nói bỏ Twitter, model vẫn gọi thêm `social_search`; đoạn phạm vi v6 liệt kê nhiều nguồn nên model gọi hết | v7: chỉ gọi tool cho lượt mới nhất, không gọi lại nguồn đã bỏ |
+| G09 (v5-rerun, v6, v7) | missing_info | `timeline(screenname="sama", limit=5)` | "lấy thêm tweet của người kia": model dùng lại account cũ thay vì hỏi là ai | v8: tham chiếu mập mờ coi là thiếu thông tin, gọi `clarify` |
+| R10 (v7-rerun, v9) | missing_info | `social_search(query="tóm tắt")`, `social_search(query="AI")` | không có handle nhưng model tìm theo từ khoá thay vì hỏi lại | chưa sửa triệt để: dao động, lần chạy lại PASS |
+
+Ghi chú: `failure_type` là nhãn gắn sẵn của case. Lỗi thực tế đọc ở `observed_mismatch` (ví dụ `extra_tool_call` ở M06, `missing_tool_call` ở G09). R13 mang nhãn `wrong_tool` nhưng lỗi thật là `wrong_arg_value`.
 
 ## B3. Team Eval Cases
 
@@ -118,11 +123,15 @@ Bài học khi viết case: G08 ban đầu chấm `screenname="Vinfast"`, nhưng
 
 ## B4. Live Chat Evidence
 
-Use `transcripts/*.transcript.json`.
+Transcript: `transcripts/v9_openrouter_20261110T231344538297.transcript.json` (`v9+pdf1fddffc51e+t82a566e49c32`, OpenRouter `openai/gpt-4o-mini`).
 
 | Turn | User Request | Tool Calls | Version Evidence | Outcome |
 |---|---|---|---|---|
-|  |  |  |  |  |
+| 1 | Tin AI hôm nay có gì nổi bật? | `lookup(query="AI", topic="news", timeframe="day")` | v9 | Đúng tool và args; trả 5 tin kèm link. Câu trả lời bằng tiếng Anh dù user hỏi tiếng Việt |
+| 2 | Tóm tắt giúp tôi bài báo này | không gọi tool | v9 | Không bịa URL, hỏi lại link. Hỏi bằng text thay vì gọi `clarify` (eval sẽ chấm FAIL kiểu này) |
+| 3 | https://en.wikipedia.org/wiki/Large_language_model | `fetch(url="https://en.wikipedia.org/wiki/Large_language_model")` | v9 | Đọc đúng URL user gửi, tóm tắt bằng tiếng Việt |
+| 4 | Đăng bản tin này lên Telegram | `clarify(response_type="yes_no", question="Bạn có xác nhận muốn đăng bản tin này lên Telegram không?")` | v9 | Hỏi xác nhận trước, chưa gọi `send` |
+| 5 | Có | `send(text="Tóm tắt về Mô hình ngôn ngữ lớn…", confirmed=true)` | v9 | Chỉ gọi `send` sau khi user đồng ý. Không gửi được vì nhóm không cấu hình `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID`; tool trả error dict, không crash |
 
 ## B5. Bonus Evidence
 
@@ -130,9 +139,6 @@ Only fill if your team did bonus.
 
 | Bonus | Evidence File | What Worked | Risk / Guardrail |
 |---|---|---|---|
-| send (Telegram) |  |  |  |
-| arXiv/company policy |  |  |  |
-| UI |  |  |  |
 | Tool unit tests (`tests/`) | `tests/test_tools_todo.py` (`pytest tests/test_tools_todo.py -v`) | 14 stub tool có sẵn đã viết xong + 5 regression test; tất cả chạy offline, mock HTTP bằng `fake_http` | Test không gọi mạng thật (`conftest.py` chặn), không cần key; guardrail `send` được kiểm tra: thiếu cấu hình thì trả lỗi và **không** gửi request |
 
 Tool unit tests:
@@ -147,33 +153,26 @@ Tool unit tests:
 
 ## B6. Reflection
 
-- Which fixes belonged in `system_prompt.md`?
-- Which fixes belonged in `tools.yaml`?
-- Which failure needed manual review instead of automatic grading?
-- What would you improve next?
+**Những fix nào nên đặt trong `system_prompt.md`?**
+Các rule về hành vi chung: hỏi lại bằng `clarify` thay vì đoán (v1), xác nhận trước khi thực hiện hành động có side effect (v2), bỏ chỉ dẫn ép agent chỉ dùng một bước hoặc một tool (v4.5), giới hạn phạm vi research (v6), chỉ gọi tool cho lượt mới nhất (v7), và coi tham chiếu mập mờ là thiếu thông tin (v8). Đây là các thay đổi liên quan đến hành vi và routing, không phải lỗi của từng tool. Riêng v1 đã đưa routing từ 0.75 lên 1.00 và giúp R08, R14 đạt PASS.
 
-## B7. Small Local Model Challenge (bonus)
+**Những fix nào nên đặt trong `tools.yaml`?**
+Tất cả lỗi liên quan đến arguments: thiếu `response_type` (R10, R11), dùng `text` thay vì `yes_no` (R12), thiếu `topic="news"` và `query` thừa chữ (R13). Hai lần sửa prompt (v2, v3) đều không giải quyết được R12. Đến v4, khi chuyển `response_type`, `topic` thành `required` và ghi rõ quy ước ngay trong mô tả tham số, kết quả đạt 20/20 ở cả hai lần chạy. Ranh giới giữa các tool cũng thuộc về đây: ở v9, mô tả `ai_newsletter` ghi rõ chỉ dùng khi user xin bản tin, để tool mới không lấn sang `lookup`.
 
-Only fill if your team did the local model challenge.
+Bài học: các quy ước liên quan trực tiếp đến từng tham số nên được đặt trong tool declaration thay vì chỉ nhắc lại trong prompt.
 
-| Version | Model (provider) | Prompt/Tools | case_accuracy | tool_routing | argument | multiturn | Run File |
-|---|---|---|---|---|---|---|---|
-| v3 | (cloud) | v3 |  |  |  |  |  |
-| v3-... | (ollama) | v3 |  |  |  |  |  |
-| v3-... | (ollama) | v3 |  |  |  |  |  |
-| v4-local |  |  |  |  |  |  |  |
-| v5-local |  |  |  |  |  |  |  |
+**Những failure nào cần manual review thay vì chỉ dựa vào automatic grading?**
 
-Lỗi đặc thù của model nhỏ (đếm từ run JSON):
+- R12: Eval chỉ báo sai `response_type`. Phải đọc log mới phát hiện nguyên nhân thật là hai rule xung đột: thiếu thông tin và cần xác nhận. Nếu chỉ nhìn kết quả eval sẽ dễ sửa sai chỗ.
+- M06 ở v6: lỗi xuất hiện ở case không liên quan tới rule vừa thêm. Phải đọc log mới thấy đoạn phạm vi liệt kê nhiều nguồn khiến model gọi thừa tool. Đây là regression do chính lần sửa prompt gây ra.
+- Các case ngoài phạm vi (R08, R14, G05): Eval chỉ kiểm tra có gọi tool hay không, chưa đánh giá câu từ chối có lịch sự và đúng ngữ cảnh hay không.
+- R13: Case được gắn nhãn `wrong_tool`, nhưng lỗi thực tế nằm ở arguments. Nếu tin hoàn toàn vào nhãn eval sẽ dẫn đến giả thuyết sai.
+- Model variance: Cùng một version có thể chênh 1–2 case giữa các lần chạy (R10 ở v7, v9; G09 ở v5). Vì vậy, cần chạy lại trước khi kết luận một giả thuyết đúng hay sai.
 
-| Failure Pattern | Count | Example Case | Fix Tried | Helped? |
-|---|---|---|---|---|
-| wrong / hallucinated tool |  |  |  |  |
-| invalid JSON args (`_invalid_json_arguments`) |  |  |  |  |
-| no tool call / answered directly |  |  |  |  |
-| missed `clarify` |  |  |  |  |
-| repeated / unnecessary calls |  |  |  |  |
+**What would you improve next?**
 
-- Cái gì giúp model nhỏ gọi tool đúng hơn nhất? Bằng chứng?
-- Bản prompt tối ưu cho local chạy trên model cloud thì sao?
-- Khi nào nhóm sẽ chọn model local thay vì cloud cho agent này?
+- Sửa triệt để R10: thêm vào mô tả `timeline` / `social_search` ví dụ "muốn tweet nhưng không nói của ai thì gọi `clarify`, không dùng `social_search`".
+- Bổ sung quy định về trường hợp không nên sử dụng `cite_sources` và `google_maps`.
+- Mở rộng eval để kiểm tra chuỗi gọi tool nhiều bước (`lookup` → `cite_sources`). Eval hiện tại chỉ chấm tool call đầu tiên nên chưa đo được workflow này.
+- Mỗi lần thêm rule vào prompt, chạy lại cả base lẫn group để bắt regression kiểu M06.
+- Chạy mỗi version ít nhất 2–3 lần và báo cáo kết quả trung bình thay vì dựa vào một lần chạy.
