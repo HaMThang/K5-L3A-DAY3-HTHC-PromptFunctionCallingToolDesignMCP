@@ -186,6 +186,44 @@ def test_policy_instruction_like_lines_go_to_untrusted_text() -> None:
     assert "viral tweet" not in hit["facts"]
 
 
+# ---------------- regression tests (Challenge+: bugs found with edge inputs) ----------------
+# Bug 1: limit < 0 was passed straight to a slice, so limit=-1 returned "all but the last tweet".
+# Bug 2: format printed a dangling " - " separator for items without url/source.
+
+def _eight_tweets() -> dict:
+    return {"timeline": [{"tweet_id": str(i), "text": f"Tweet {i}", "screen_name": "sama"} for i in range(1, 9)]}
+
+
+def test_timeline_negative_limit_falls_back_to_default(monkeypatch, fake_http) -> None:
+    monkeypatch.setenv("RAPIDAPI_KEY", "test-key")
+    fake_http(FakeResponse(_eight_tweets()))
+    result = TOOL_FUNCTIONS["timeline"](screenname="sama", limit=-1)
+    assert len(result["items"]) == 5
+    assert result["items"][0]["url"] == "https://x.com/sama/status/1"
+
+
+def test_social_search_negative_limit_falls_back_to_default(monkeypatch, fake_http) -> None:
+    monkeypatch.setenv("RAPIDAPI_KEY", "test-key")
+    fake_http(FakeResponse(_eight_tweets()))
+    assert len(TOOL_FUNCTIONS["social_search"](query="AI", limit=-1)["items"]) == 5
+
+
+def test_timeline_limit_given_as_string_is_respected(monkeypatch, fake_http) -> None:
+    monkeypatch.setenv("RAPIDAPI_KEY", "test-key")
+    fake_http(FakeResponse(_eight_tweets()))
+    assert len(TOOL_FUNCTIONS["timeline"](screenname="sama", limit="3")["items"]) == 3
+
+
+def test_timeline_non_numeric_limit_returns_error_dict(monkeypatch, fake_http) -> None:
+    monkeypatch.setenv("RAPIDAPI_KEY", "test-key")
+    fake_http(FakeResponse(_eight_tweets()))
+    assert TOOL_FUNCTIONS["timeline"](screenname="sama", limit="abc")["error"] == "ValueError"
+
+
+def test_format_item_without_url_has_no_dangling_separator() -> None:
+    md = TOOL_FUNCTIONS["format"](items=[{"title": "Tin không có link"}], template="bullets")["markdown"]
+    assert md == "- Tin không có link"
+
 
 # ---------------- YOUR NEW TOOL(S) ----------------
 # Write at least 3 tests per tool your team adds:
