@@ -24,7 +24,7 @@ AI & Tech Research Agent - một agent tổng hợp tin AI/công nghệ mỗi ng
 
 > Dán link public để team khác mở thử ngay. Cách deploy nhanh bằng Cloudflare Tunnel xem README. Nếu deploy Vercel/Streamlit Cloud thì dán link đó.
 >
-> URL: 
+> URL: https://profit-gnome-relationships-apparatus.trycloudflare.com
 
 ## A2. Tool agent có
 
