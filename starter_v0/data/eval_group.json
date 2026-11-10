@@ -72,11 +72,11 @@
       "phase": "B", "suite": "group",
       "turns": [
         {"role": "user", "content": "Tìm tin tức về Vinfast trên web tuần này"},
-        {"role": "user", "content": "Thôi bỏ web đi, xem tài khoản Twitter chính thức của Nvidia đăng gì gần đây"}
+        {"role": "user", "content": "Thôi bỏ web đi, xem tài khoản Twitter chính thức của Vinfast đăng gì gần đây"}
       ],
       "failure_type": "wrong_tool",
-      "expect": {"tool_calls": [{"name": "timeline", "args": {"screenname": "Vinfast"}}]},
-      "metadata": {"skill": "multiturn_switch_to_timeline", "difficulty": "medium", "what_it_tests": "2 turns: đổi từ web sang bài đăng CỦA một tài khoản → timeline(screenname=nvidia), không phải social_search hay lookup."}
+            "expect": {"tool_calls": [{"name": "timeline", "args": {}}]},
+      "metadata": {"skill": "multiturn_switch_to_timeline", "difficulty": "medium", "what_it_tests": "2 turns: đổi từ web sang bài đăng CỦA một tài khoản (Vinfast) → timeline, không phải social_search hay lookup. Không chấm screenname vì handle chính thức không chắc chắn."}
     },
     {
       "id": "G09_ambiguous_reference_clarify",
