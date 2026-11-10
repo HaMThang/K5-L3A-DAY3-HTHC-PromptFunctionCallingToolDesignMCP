@@ -21,26 +21,44 @@ TODO = "TODO(student): implement this test"
 # ---------------- clarify ----------------
 
 def test_clarify_choice_returns_options_and_awaits_user() -> None:
-    # Call clarify with response_type="choice" and 2 options.
-    # Assert: options are returned unchanged, awaiting_user is True.
-    pytest.skip(TODO)
+    result = TOOL_FUNCTIONS["clarify"](
+        question="Bạn muốn xem tài khoản nào?",
+        response_type="choice",
+        options=["sama", "elonmusk"],
+    )
+    assert result["options"] == ["sama", "elonmusk"]
+    assert result["awaiting_user"] is True
+    assert result["response_type"] == "choice"
 
 
 # ---------------- format ----------------
 
 def test_format_sections_groups_items_by_section() -> None:
-    # Items with section "A", "B", "A" -> markdown has exactly one "## A" and one "## B".
-    pytest.skip(TODO)
+    items = [
+        {"title": "Tin 1", "url": "https://a.com/1", "section": "A"},
+        {"title": "Tin 2", "url": "https://b.com/2", "section": "B"},
+        {"title": "Tin 3", "url": "https://a.com/3", "section": "A"},
+    ]
+    md = TOOL_FUNCTIONS["format"](items=items, template="sections")["markdown"]
+    assert md.count("## A") == 1
+    assert md.count("## B") == 1
+
 
 
 def test_format_thread_numbers_items() -> None:
-    # template="thread" -> lines start with "1/", "2/", ...
-    pytest.skip(TODO)
+    items = [{"title": "Tin 1"}, {"title": "Tin 2"}, {"title": "Tin 3"}]
+    md = TOOL_FUNCTIONS["format"](items=items, template="thread")["markdown"]
+    parts = md.split("\n\n")
+    assert parts[0].startswith("1/")
+    assert parts[1].startswith("2/")
+    assert parts[2].startswith("3/")
+
 
 
 def test_format_empty_items_does_not_crash() -> None:
-    # items=None and items=[] -> item_count == 0, no exception.
-    pytest.skip(TODO)
+    assert TOOL_FUNCTIONS["format"](items=None)["item_count"] == 0
+    assert TOOL_FUNCTIONS["format"](items=[])["item_count"] == 0
+
 
 
 # ---------------- send (guardrail) ----------------
