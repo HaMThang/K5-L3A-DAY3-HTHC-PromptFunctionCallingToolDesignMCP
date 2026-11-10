@@ -5,6 +5,18 @@
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
   "cases": [
     {
+      "id": "G02_ai_newsletter_weekly",
+      "phase": "B",
+      "query": "Tạo bản tin AI về AI agents trong tuần này, tối đa 3 tin.",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {"name": "ai_newsletter", "args": {"topic": "AI agents", "timeframe": "week", "max_items": 3}}
+        ]
+      },
+      "metadata": {"what_it_tests": "Routes an explicit AI newsletter request with topic, timeframe, and item count."}
+    },
+    {
       "id": "G01_google_maps_specific_address",
       "phase": "B",
       "query": "Tạo link Google Maps cho địa chỉ 135 Nam Kỳ Khởi Nghĩa, TP. Hồ Chí Minh.",

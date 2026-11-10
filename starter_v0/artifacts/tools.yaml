@@ -148,3 +148,12 @@ tools:
       properties:
         place: {type: string, description: "Tên địa điểm hoặc địa chỉ. Kèm thành phố hoặc địa chỉ đã xác minh nếu có."}
       required: [place]
+
+  - name: ai_newsletter
+    description: "Tìm tin AI theo chủ đề và tạo bản tin Markdown có link nguồn. Dùng khi người dùng muốn một bản tin AI."
+    parameters:
+      type: object
+      properties:
+        topic: {type: string, default: "AI", description: "Chủ đề tin AI"}
+        timeframe: {type: string, enum: [day, week, month, year], default: day, description: "Khoảng thời gian"}
+        max_items: {type: integer, minimum: 1, maximum: 10, default: 5, description: "Số mục tối đa"}
