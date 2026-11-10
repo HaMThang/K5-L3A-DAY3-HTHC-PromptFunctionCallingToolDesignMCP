@@ -6,9 +6,9 @@
 
 ## Team
 
-- Team:
-- Members:
-- Provider/model:
+- Team:HTHC
+- Members:Lê Gia Hưng, Hà Minh Thắng, Nguyễn Thế Hoàng, Đặng Đức Cương
+- Provider/model:OpenAI
 
 ---
 
@@ -18,7 +18,7 @@
 
 > 1–2 câu mô tả agent dùng để làm gì (cho team khác hiểu nhanh).
 
-Ví dụ: "Research agent: tìm tin theo từ khóa / theo tài khoản, đọc URL, tổng hợp thành digest, và gửi lên Telegram khi được xác nhận."
+Ví dụ: "Research agent: Research new tech theo từ khóa / theo tài khoản, đọc URL, tổng hợp thành digest, và gửi lên Telegram khi được xác nhận."
 
 **Link dùng thử (deploy):**
 
