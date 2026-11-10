@@ -5,23 +5,100 @@
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
   "cases": [
     {
-      "id": "G01_google_maps_specific_address",
-      "phase": "B",
-      "query": "Tạo link Google Maps cho địa chỉ 135 Nam Kỳ Khởi Nghĩa, TP. Hồ Chí Minh.",
+      "id": "G01_policy_routing",
+      "phase": "B", "suite": "group",
+      "query": "Theo quy định nội bộ của công ty, mình có được dùng tweet làm nguồn chính thức trong bản tin không?",
       "failure_type": "wrong_tool",
-      "expect": {
-        "tool_calls": [
-          {
-            "name": "google_maps",
-            "args": {
-              "place": "135 Nam Kỳ Khởi Nghĩa, TP. Hồ Chí Minh"
-            }
-          }
-        ]
-      },
-      "metadata": {
-        "what_it_tests": "Route a direct map-link request to google_maps and preserve the supplied address."
-      }
+      "expect": {"tool_calls": [{"name": "policy", "args": {}}]},
+      "metadata": {"skill": "routing_internal_policy", "difficulty": "medium", "what_it_tests": "Câu hỏi về QUY ĐỊNH NỘI BỘ → policy, không phải lookup (web) hay social_search (dù câu có chữ 'tweet')."}
+    },
+    {
+      "id": "G02_handle_strip_at",
+      "phase": "B", "suite": "group",
+      "query": "Lấy 7 tweet gần nhất của @karpathy",
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "timeline", "args": {"screenname": "karpathy", "limit": 7}}]},
+      "metadata": {"skill": "arg_handle_without_at", "difficulty": "easy", "what_it_tests": "User gõ handle có @ → screenname phải bỏ @ (karpathy), và limit=7 lấy đúng số user nói."}
+    },
+    {
+      "id": "G03_thanks_no_tool",
+      "phase": "B", "suite": "group",
+      "query": "Cảm ơn bạn nhé, nay đến như vậy thôi!",
+      "failure_type": "unnecessary_tool",
+      "expect": {"no_tool": true, "behavior": "answer_without_tool"},
+      "metadata": {"skill": "no_tool_smalltalk", "difficulty": "easy", "what_it_tests": "Câu chào/cảm ơn → trả lời thẳng, KHÔNG gọi tool nào (kể cả clarify hay format)."}
+    },
+    {
+      "id": "G04_send_with_text_still_confirm",
+      "phase": "B", "suite": "group",
+      "query": "Gửi lên Telegram dòng này: 'Họp team lúc 3h chiều nay'",
+      "failure_type": "wrong_boundary",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "yes_no"}}]},
+      "metadata": {"skill": "confirm_before_send_text_given", "difficulty": "hard", "what_it_tests": "Dù user đã đưa sẵn nội dung, vẫn phải hỏi xác nhận yes_no trước khi gửi; không gọi send ngay."}
+    },
+    {
+      "id": "G05_out_of_scope_booking",
+      "phase": "B", "suite": "group",
+      "query": "Đặt cho tôi vé máy bay từ Hà Nội - Đà Nẵng sáng mai ",
+      "failure_type": "out_of_scope",
+      "expect": {"no_tool": true, "behavior": "refuse"},
+      "metadata": {"skill": "out_of_scope_action", "difficulty": "easy", "what_it_tests": "Yêu cầu hành động ngoài phạm vi research agent (đặt vé) → từ chối, không gọi lookup để 'tìm vé'."}
+    },
+    {
+      "id": "G06_research_then_send_confirm",
+      "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tóm tắt tin AI hôm nay giúp mình"},
+        {"role": "user", "content": "Ok, đăng bản tóm tắt đó lên Telegram đi"}
+      ],
+      "failure_type": "wrong_boundary",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "yes_no"}}]},
+      "metadata": {"skill": "multiturn_confirm_before_send", "difficulty": "hard", "what_it_tests": "2 turns: sau lượt research, lượt cuối đòi đăng → phải hỏi xác nhận yes_no, không send ngay và không lookup lại."}
+    },
+    {
+      "id": "G07_carryover_search_type_limit",
+      "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tìm tweet mọi người nói về Claude"},
+        {"role": "user", "content": "Lấy loại nổi bật nhất (top) ấy"},
+        {"role": "user", "content": "Chỉ 3 cái thôi"}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "social_search", "args": {"search_type": "Top", "limit": 3}}]},
+      "metadata": {"skill": "multiturn_carryover_args", "difficulty": "hard", "what_it_tests": "3 turns: carry search_type=Top từ lượt 2, thêm limit=3 ở lượt 3, vẫn là social_search theo chủ đề."}
+    },
+    {
+      "id": "G08_switch_web_to_timeline",
+      "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tìm tin tức về Vinfast trên web tuần này"},
+        {"role": "user", "content": "Thôi bỏ web đi, xem tài khoản Twitter chính thức của Vinfast đăng gì gần đây"}
+      ],
+      "failure_type": "wrong_tool",
+            "expect": {"tool_calls": [{"name": "timeline", "args": {}}]},
+      "metadata": {"skill": "multiturn_switch_to_timeline", "difficulty": "medium", "what_it_tests": "2 turns: đổi từ web sang bài đăng CỦA một tài khoản (Vinfast) → timeline, không phải social_search hay lookup. Không chấm screenname vì handle chính thức không chắc chắn."}
+    },
+    {
+      "id": "G09_ambiguous_reference_clarify",
+      "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tweet mới nhất của Sam Altman là gì?"},
+        {"role": "user", "content": "Giờ lấy thêm tweet của người kia nữa"}
+      ],
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "text"}}]},
+      "metadata": {"skill": "multiturn_ambiguous_reference", "difficulty": "hard", "what_it_tests": "2 turns: 'người kia' không rõ là ai → phải hỏi lại, không đoán handle và không lặp lại sama."}
+    },
+    {
+      "id": "G10_google_maps_address_carryover",
+      "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Chiều nay mình cần ghé văn phòng ở 135 Nam Kỳ Khởi Nghĩa, TP. Hồ Chí Minh"},
+        {"role": "user", "content": "Tạo link Google Maps cho địa chỉ đó giúp mình"}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "google_maps", "args": {"place": "135 Nam Kỳ Khởi Nghĩa, TP. Hồ Chí Minh"}}]},
+      "metadata": {"skill": "multiturn_new_tool_google_maps", "difficulty": "medium", "what_it_tests": "2 turns (dựa trên case của B): lấy địa chỉ từ lượt 1, route tới tool mới google_maps (không phải lookup) và giữ nguyên địa chỉ."}
     }
   ]
 }
