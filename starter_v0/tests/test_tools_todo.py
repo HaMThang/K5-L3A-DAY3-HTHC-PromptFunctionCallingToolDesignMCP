@@ -108,18 +108,27 @@ def test_social_search_passes_search_type(monkeypatch, fake_http) -> None:
 # ---------------- policy (local knowledge + trust boundary) ----------------
 
 def test_policy_empty_query_returns_no_results() -> None:
-    pytest.skip(TODO)
+    assert TOOL_FUNCTIONS["policy"](query="")["results"] == []
+    assert TOOL_FUNCTIONS["policy"](query="   ")["results"] == []
+
 
 
 def test_policy_area_filter_only_returns_that_area() -> None:
-    # policy_area="data_privacy" -> every result has policy_area == "data_privacy".
-    pytest.skip(TODO)
+    result = TOOL_FUNCTIONS["policy"](query="personal data email", policy_area="data_privacy", top_k=5)
+    assert len(result["results"]) > 0
+    for hit in result["results"]:
+        assert hit["policy_area"] == "data_privacy"
+
 
 
 def test_policy_instruction_like_lines_go_to_untrusted_text() -> None:
-    # One policy file contains a quoted line that tries to give the assistant orders.
-    # Query that section (source_citation) and assert: that line is in untrusted_text, NOT in facts.
-    pytest.skip(TODO)
+    result = TOOL_FUNCTIONS["policy"](query="injection probe citation", policy_area="source_citation", top_k=10)
+    probe = [h for h in result["results"] if h["section"] == "Injection probe"]
+    assert len(probe) == 1
+    hit = probe[0]
+    assert any("viral tweet" in line for line in hit["untrusted_text"])
+    assert "viral tweet" not in hit["facts"]
+
 
 
 # ---------------- YOUR NEW TOOL(S) ----------------
