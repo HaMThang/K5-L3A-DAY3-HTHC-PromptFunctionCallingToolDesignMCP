@@ -50,9 +50,13 @@ AI & Tech Research Agent - một agent tổng hợp tin AI/công nghệ mỗi ng
 > 3–5 câu hỏi/yêu cầu mẫu để team khác tự thử agent ngay.
 
 1.Hôm nay có những tin tức AI nào nổi bật nhất?
+
 2.Những mô hình AI mới nào vừa được ra mắt?
+
 3.Top 5 dự án AI đang trending trên GitHub là gì?
+
 4.Cộng đồng Hacker News đang thảo luận về chủ đề AI nào?
+
 5.Xu hướng công nghệ nào đang được quan tâm nhất tuần này?
 
 ---
@@ -65,10 +69,12 @@ Fill from `artifacts/version_log.csv` and `runs/*.json`.
 
 | Version | Changed Artifact | Hypothesis | Metric Before | Metric After | Run File |
 |---|---|---|---:|---:|---|
-| v0 | baseline |  |  |  |  |
-| v1 |  |  |  |  |  |
-| v2 |  |  |  |  |  |
-| v3 |  |  |  |  |  |
+| v0 | baseline |Đo hành vi của prompt và tools.yaml starter trước khi sửa  |  | 0.70 |  runs/v0_B_base_openrouter_20261110T102735867300.json|
+| v1 |  system_prompt.md| H1: thay chỉ dẫn đoán bằng rule gọi clarify khi thiếu account/URL, vẫn cho map tên người sang handle → R10, R11 PASS | 0.70 | 0.85 |runs/v1_B_base_openrouter_20261110T105843902795.json  |
+| v2 | system_prompt.md | H3: thay cứ gửi luôn bằng rule xác nhận clarify yes_no trước khi send → R12 PASS. Kết quả: R12 vẫn FAIL (model hỏi nội dung bằng text, xung đột với rule thiếu thông tin của H1); chạy lại v2-rerun cho cùng kết quả |0.85  | 0.95 | runs/v2_B_base_openrouter_20261110T105932596003.json |
+| v3 | system_prompt.md |H3b: thêm câu ưu tiên xác nhận yes_no hơn rule thiếu thông tin → R12 PASS. Kết quả: BÁC BỎ, R12 vẫn FAIL; R11 (thiếu response_type) và R13 (thiếu topic) dao động. Gỡ câu này, v4 xây trên v2  |0.95  | 0.85 | runs/v3_B_base_openrouter_20261110T110117470939.json |
+|v4|tools.yaml|H6: viết lại tools.yaml: description có khi nào dùng / không dùng, convention args, response_type và topic thành required, clarify mô tả yes_no cho send → R11, R12, R13 PASS. Kết quả: 20/20, v4-rerun cũng 20/20|0.95|1.0|runs/v4_B_base_openrouter_20261110T110248937728.json|
+|v4.5|system_prompt.md|Bỏ câu ép một bước thì base vẫn 20/20 (3/3 lần chạy)|1.0|1.0|runs/v4.5_B_base_openrouter_20261110T114843251934.json|
 
 ## B2. Failure Analysis
 
