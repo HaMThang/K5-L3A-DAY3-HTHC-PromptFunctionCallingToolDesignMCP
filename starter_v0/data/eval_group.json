@@ -88,6 +88,17 @@
       "failure_type": "missing_info",
       "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "text"}}]},
       "metadata": {"skill": "multiturn_ambiguous_reference", "difficulty": "hard", "what_it_tests": "2 turns: 'người kia' không rõ là ai → phải hỏi lại, không đoán handle và không lặp lại sama."}
+    },
+    {
+      "id": "G10_google_maps_address_carryover",
+      "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Chiều nay mình cần ghé văn phòng ở 135 Nam Kỳ Khởi Nghĩa, TP. Hồ Chí Minh"},
+        {"role": "user", "content": "Tạo link Google Maps cho địa chỉ đó giúp mình"}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "google_maps", "args": {"place": "135 Nam Kỳ Khởi Nghĩa, TP. Hồ Chí Minh"}}]},
+      "metadata": {"skill": "multiturn_new_tool_google_maps", "difficulty": "medium", "what_it_tests": "2 turns (dựa trên case của B): lấy địa chỉ từ lượt 1, route tới tool mới google_maps (không phải lookup) và giữ nguyên địa chỉ."}
     }
   ]
 }
