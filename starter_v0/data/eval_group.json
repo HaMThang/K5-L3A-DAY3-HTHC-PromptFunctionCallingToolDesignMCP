@@ -99,6 +99,14 @@
       "failure_type": "wrong_tool",
       "expect": {"tool_calls": [{"name": "google_maps", "args": {"place": "135 Nam Kỳ Khởi Nghĩa, TP. Hồ Chí Minh"}}]},
       "metadata": {"skill": "multiturn_new_tool_google_maps", "difficulty": "medium", "what_it_tests": "2 turns (dựa trên case của B): lấy địa chỉ từ lượt 1, route tới tool mới google_maps (không phải lookup) và giữ nguyên địa chỉ."}
+    },
+    {
+      "id": "G11_ai_newsletter_weekly",
+      "phase": "B", "suite": "group",
+      "query": "Tạo bản tin AI về AI agents trong tuần này, tối đa 3 tin.",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "ai_newsletter", "args": {"timeframe": "week", "max_items": 3}}]},
+      "metadata": {"skill": "routing_new_tool_ai_newsletter", "difficulty": "medium", "what_it_tests": "(Case của B) Yêu cầu tạo BẢN TIN rõ ràng → tool mới ai_newsletter (không phải lookup + format), giữ timeframe=week và max_items=3. Không chấm topic vì model có thể diễn đạt khác."}
     }
   ]
 }

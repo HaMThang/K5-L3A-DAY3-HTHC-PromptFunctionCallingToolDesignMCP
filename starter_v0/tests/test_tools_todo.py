@@ -226,18 +226,5 @@ def test_format_item_without_url_has_no_dangling_separator() -> None:
 
 
 # ---------------- YOUR NEW TOOL(S) ----------------
-# Write at least 3 tests per tool your team adds:
-#   1. happy path (mocked if it calls an API)
-#   2. bad / missing input from the model (empty string, wrong type, out-of-enum value)
-#   3. failure path (missing key, HTTP error, timeout) -> returns error dict, does not raise
-
-def test_my_new_tool_happy_path() -> None:
-    pytest.skip(TODO)
-
-
-def test_my_new_tool_bad_input_from_model() -> None:
-    pytest.skip(TODO)
-
-
-def test_my_new_tool_failure_returns_error_dict() -> None:
-    pytest.skip(TODO)
+# Tests for the team's new tools live in their own files:
+#   tests/test_google_maps.py, tests/test_cite_sources.py, tests/test_ai_newsletter.py

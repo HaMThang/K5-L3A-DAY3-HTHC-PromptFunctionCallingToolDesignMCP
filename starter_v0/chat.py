@@ -73,7 +73,8 @@ def tool_results_message(events: list[dict[str, Any]]) -> dict[str, str]:
         "content": (
             "TOOL_RESULTS_JSON:\n"
             f"{json_text(events, max_chars=24000)}\n\n"
-            "Use only these tool results. If the user asked for a digest and the items are ready, "
+            "Use the collected tool results as evidence. If ai_newsletter returned Markdown, present it with its source links. "
+            "For other digests, if the user asked for a digest and the items are ready, "
             "call the formatting tool. If the user asked about a specific place and no map link has been generated, "
             "call google_maps once the place is identified. Answer with citations and the returned map link when available."
         ),

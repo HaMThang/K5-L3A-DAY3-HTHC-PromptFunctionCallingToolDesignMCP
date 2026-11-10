@@ -7,6 +7,7 @@ import yaml
 
 # Folder names are intentionally vague to match the tool names students see.
 # The imported function names are the underlying implementations (unchanged).
+from .ai_newsletter.tool import ai_newsletter
 from .clarify.tool import ask_user
 from .cite_sources.tool import cite_sources
 from .papers.tool import arxiv_search
@@ -28,6 +29,7 @@ from .lookup.tool import web_search
 # Otherwise the eval raises "not declared in tools.yaml" or scores every call as a name mismatch.
 TOOL_FUNCTIONS = {
     "clarify": ask_user,
+    "ai_newsletter": ai_newsletter,
     "cite_sources": cite_sources,
     "timeline": get_user_tweets,
     "social_search": search_tweets,
