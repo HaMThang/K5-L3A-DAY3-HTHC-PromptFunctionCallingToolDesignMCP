@@ -88,7 +88,7 @@ Use actual failures from `results[*].result.failures`.
 
 List the 10 cases added to `data/eval_group.json` (5 single turn + 5 multi turn).
 
-10 case: **G01–G05 single turn**, **G06–G10 multi turn**; phủ đủ 6 loại lỗi (`wrong_tool` ×3, `wrong_arg_value` ×2, `wrong_boundary` ×2, `missing_info`, `out_of_scope`, `unnecessary_tool`). Cột Result: v5 = bản trên `main` trước khi tối ưu cho group (`runs/v5_B_group_openrouter_20261110T142909457399.json`, rerun `runs/v5-rerun_B_group_openrouter_20261110T142931986734.json`); v8 = bản cuối (`runs/v8_B_group_openrouter_20261110T143633060980.json`, rerun `runs/v8-rerun_B_group_openrouter_20261110T143646094045.json`).
+11 case: **G01–G05 single turn**, **G06–G10 multi turn**, cộng **G11** (single turn, case của B cho tool mới `ai_newsletter`, thêm ở v9); phủ đủ 6 loại lỗi (`wrong_tool` ×4, `wrong_arg_value` ×2, `wrong_boundary` ×2, `missing_info`, `out_of_scope`, `unnecessary_tool`). Cột Result: v5 = bản trên `main` trước khi tối ưu cho group (`runs/v5_B_group_openrouter_20261110T142909457399.json`, rerun `runs/v5-rerun_B_group_openrouter_20261110T142931986734.json`); v8 = bản cuối (`runs/v8_B_group_openrouter_20261110T143633060980.json`, rerun `runs/v8-rerun_B_group_openrouter_20261110T143646094045.json`).
 
 | Case ID | What It Tests | Expected Tool/Behavior | Result |
 |---|---|---|---|
@@ -102,8 +102,9 @@ List the 10 cases added to `data/eval_group.json` (5 single turn + 5 multi turn)
 | G08_switch_web_to_timeline | Đổi từ web sang bài đăng CỦA tài khoản Vinfast → `timeline`, không phải `social_search`/`lookup` | `timeline` (không chấm `screenname`) | v5 PASS ×2 · v8 PASS ×2 |
 | G09_ambiguous_reference_clarify | "Lấy thêm tweet của người kia" → không rõ là ai, phải hỏi lại, không dùng lại `sama` | `clarify(response_type="text")` | **v5 PASS rồi FAIL** (rerun gọi `timeline("sama")`) · v8 PASS ×2 |
 | G10_google_maps_address_carryover | Lấy địa chỉ từ lượt 1, route tới tool mới `google_maps` | `google_maps(place="135 Nam Kỳ Khởi Nghĩa, TP. Hồ Chí Minh")` | v5 PASS ×2 · v8 PASS ×2 |
+| G11_ai_newsletter_weekly | Yêu cầu tạo BẢN TIN rõ ràng → tool mới `ai_newsletter` (không phải `lookup` + `format`), giữ `timeframe=week`, `max_items=3` | `ai_newsletter(timeframe="week", max_items=3)` | v9 PASS ×2 (`runs/v9_B_group_openrouter_20261110T162927842321.json`, rerun `runs/v9-rerun_B_group_openrouter_20261110T162956435077.json`) |
 
-Tổng: v5 = 0.90 / 0.80 (rerun) → v8 = 1.00 / 1.00.
+Tổng: v5 = 0.90 / 0.80 (rerun) → v8 = 1.00 / 1.00 (10 case) → v9 = 1.00 / 1.00 (11 case, tất cả G01–G11 PASS ×2).
 
 Bài học khi viết case: G08 ban đầu chấm `screenname="Vinfast"`, nhưng handle chính thức không xác minh được (model đoán `VinFastOfficial`, lần khác `VinFastAuto`), nên FAIL oan. Đã đổi sang chỉ chấm việc chọn đúng tool. Nguyên tắc: chỉ đưa vào `expect.args` những giá trị có đáp án duy nhất.
 
