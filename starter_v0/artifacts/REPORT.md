@@ -82,7 +82,15 @@ Use actual failures from `results[*].result.failures`.
 
 | Case ID | Failure Type | Actual Tool Calls | What Failed | Fix |
 |---|---|---|---|---|
-|  |  |  |  |  |
+| R08 (v0) | out_of_scope | `send(text="Nguyên hàm của x^2 là …")` | câu toán lẽ ra từ chối; model tự giải rồi gửi lên Telegram | v1: bỏ chỉ dẫn "đoán rồi gọi tool ngay" (PASS từ v1) |
+| R14 (v0) | out_of_scope | `send(text="def fibonacci(n): …")` | câu viết code: tự viết code rồi gửi đi | như R08 |
+| R10 (v0) | missing_info | `timeline(screenname="sama")` | không có handle, tự đoán Sam Altman | v1: rule gọi `clarify` khi thiếu account/URL |
+| R11 (v0) | missing_info | `fetch(url="https://example.com/article")` | không có link, tự bịa URL | như R10 |
+| R10, R11 (v1) | missing_info | `clarify(question=…)` | đúng tool nhưng thiếu `response_type="text"` | v4: `response_type` thành required trong tools.yaml |
+| R12 (v0) | wrong_boundary | `send(text="Bản tin này")` | gửi luôn, không xác nhận | v2: rule xác nhận trước khi `send` |
+| R12 (v1–v3) | wrong_boundary | `clarify(response_type="text", question="…cung cấp nội dung bản tin…")` | hỏi nội dung thay vì hỏi xác nhận `yes_no`; rule thiếu thông tin thắng rule xác nhận | v3 (sửa prompt) thất bại; v4: mô tả `clarify` trong tools.yaml ghi rõ trước send/post luôn hỏi `yes_no` |
+| R13 (v0, v3) | wrong_tool (thực tế: wrong_arg_value) | `lookup(query="AI news", timeframe="day")` + `social_search(query="AI")` | chọn đúng 2 tool nhưng thiếu `topic="news"`, `query` thừa chữ "news" | v4: `topic` required, `query` chỉ chứa từ khoá |
+| G05 (group, v4.5) | out_of_scope | `clarify(question="Bạn muốn đặt vé một chiều hay khứ hồi?")` | yêu cầu đặt vé lẽ ra từ chối, agent hỏi lại | chưa sửa: cần rule phạm vi trong prompt |
 
 ## B3. Team Eval Cases
 
