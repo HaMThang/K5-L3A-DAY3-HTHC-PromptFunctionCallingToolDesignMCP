@@ -24,7 +24,7 @@ st.caption("Research the web, explore sources, and ask follow-up questions.")
 
 with st.sidebar:
     st.header("Chat settings")
-    st.caption("Provider: OpenRouter")
+    st.caption("Provider: OpenAI")
     model = st.text_input("Model (leave blank for the provider default)").strip()
     if st.button("New conversation", use_container_width=True):
         st.session_state.history = []
@@ -65,7 +65,7 @@ if user_text := st.chat_input("What would you like to research?"):
     try:
         system_prompt = (ROOT / "artifacts" / "system_prompt.md").read_text(encoding="utf-8")
         tools = to_openai_tools(load_tool_declarations(ROOT / "artifacts" / "tools.yaml"))
-        provider = make_provider("openrouter")
+        provider = make_provider("openai")
         messages = [
             {"role": "system", "content": system_prompt},
             *trim_history(st.session_state.history, 5),
